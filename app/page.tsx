@@ -15,11 +15,21 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [isDocumentsOpen, setIsDocumentsOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lng: number;
     name?: string;
   } | null>(null);
+
+  // Sync dark mode class on document element
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Fetch initial trip data from server (with server-computed budget)
   useEffect(() => {
@@ -57,14 +67,12 @@ export default function Home() {
     }
   };
 
-  // Update total budget
   const handleUpdateBudget = (newBudget: number) => {
     if (!trip) return;
     const updated = { ...trip, totalBudget: newBudget };
     updateTripOnServer(updated);
   };
 
-  // Update activity cost (Server automatically recalculates progress bar)
   const handleUpdateActivityCost = (
     dayNumber: number,
     activityId: string,
@@ -85,7 +93,6 @@ export default function Home() {
     updateTripOnServer({ ...trip, itineraryDays: updatedDays });
   };
 
-  // Add new activity
   const handleAddActivity = (dayNumber: number, newAct: Partial<Activity>) => {
     if (!trip) return;
     const activity: Activity = {
@@ -110,7 +117,6 @@ export default function Home() {
     updateTripOnServer({ ...trip, itineraryDays: updatedDays });
   };
 
-  // Delete activity
   const handleDeleteActivity = (dayNumber: number, activityId: string) => {
     if (!trip) return;
     const updatedDays = trip.itineraryDays.map((day) => {
@@ -123,7 +129,6 @@ export default function Home() {
     updateTripOnServer({ ...trip, itineraryDays: updatedDays });
   };
 
-  // Add destination
   const handleAddDestination = (dest: Destination) => {
     if (!trip) return;
     const updated = {
@@ -133,7 +138,6 @@ export default function Home() {
     updateTripOnServer(updated);
   };
 
-  // Add travel document
   const handleAddDocument = (doc: TravelDocument) => {
     if (!trip) return;
     const updated = {
@@ -143,12 +147,10 @@ export default function Home() {
     updateTripOnServer(updated);
   };
 
-  // Add suggested activity from AI Copilot directly to timeline
   const handleAddActivityFromAI = (dayNumber: number, act: Activity) => {
     handleAddActivity(dayNumber, act);
   };
 
-  // Select location from timeline to center on map
   const handleSelectLocation = (
     coordinates?: { lat: number; lng: number },
     name?: string
@@ -160,23 +162,24 @@ export default function Home() {
 
   if (loading || !trip) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-sky-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-slate-500 font-medium">Loading Travel Planner...</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading Travel Planner...</p>
         </div>
       </div>
     );
   }
 
-  // All activities flattened for map pins
   const allActivities = trip.itineraryDays.flatMap((d) => d.activities || []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-sky-500 selection:text-white">
-      {/* 1. The Vibe Check - Top Budget Tracker Header */}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col selection:bg-sky-500 selection:text-white transition-colors">
+      {/* 1. The Vibe Check - Top Budget Tracker Header with Dark Mode Toggle */}
       <BudgetHeader
         trip={trip}
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode(!darkMode)}
         onUpdateBudget={handleUpdateBudget}
         onOpenDocuments={() => setIsDocumentsOpen(true)}
         onOpenChat={() => setIsChatOpen(true)}
@@ -185,7 +188,7 @@ export default function Home() {
       {/* Main Content Workspace */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column (5 Cols): Interactive Map & Destination Cards */}
+          {/* Left Column: Interactive Map & Destination Cards */}
           <div className="lg:col-span-5 space-y-6">
             <InteractiveMap
               destinations={trip.destinations}
@@ -201,7 +204,7 @@ export default function Home() {
             />
           </div>
 
-          {/* Right Column (7 Cols): Vertical Chronological Itinerary Timeline */}
+          {/* Right Column: Vertical Chronological Itinerary Timeline */}
           <div className="lg:col-span-7">
             <ItineraryTimeline
               trip={trip}
