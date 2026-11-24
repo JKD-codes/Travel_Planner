@@ -1,0 +1,150 @@
+'use client';
+
+import React, { useState } from 'react';
+import { TravelDocument } from '../types/trip';
+import { FileText, Plus, X, Download, Tag, Calendar, ExternalLink } from 'lucide-react';
+
+interface TravelDocumentsModalProps {
+  documents: TravelDocument[];
+  isOpen: boolean;
+  onClose: () => void;
+  onAddDocument: (doc: TravelDocument) => void;
+}
+
+export default function TravelDocumentsModal({
+  documents,
+  isOpen,
+  onClose,
+  onAddDocument,
+}: TravelDocumentsModalProps) {
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState<TravelDocument['category']>('Hotel Voucher');
+  const [confirmationCode, setConfirmationCode] = useState('');
+  const [notes, setNotes] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+    onAddDocument({
+      id: `doc-${Date.now()}`,
+      title: title.trim(),
+      category,
+      confirmationCode: confirmationCode.trim(),
+      fileType: 'Electronic Voucher / PDF',
+      notes: notes.trim(),
+      createdAt: new Date().toISOString(),
+    });
+    setTitle('');
+    setConfirmationCode('');
+    setNotes('');
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-100 flex flex-col max-h-[85vh]">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-indigo-600" />
+              Travel Documents & Bookings
+            </h3>
+            <p className="text-xs text-slate-500">Store vouchers, e-tickets, and confirmation numbers</p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Existing Documents List */}
+        <div className="flex-1 overflow-y-auto py-4 space-y-3">
+          {documents?.length === 0 ? (
+            <div className="text-center py-6 text-xs text-slate-400">
+              No documents saved yet. Add your first travel ticket or hotel voucher below.
+            </div>
+          ) : (
+            documents?.map((doc) => (
+              <div
+                key={doc.id}
+                className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 hover:border-indigo-200 transition"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-semibold text-slate-900 text-sm">{doc.title}</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                        {doc.category}
+                      </span>
+                      {doc.confirmationCode && (
+                        <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-700">
+                          Ref: {doc.confirmationCode}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-slate-400">
+                    {new Date(doc.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                {doc.notes && (
+                  <p className="text-xs text-slate-600 mt-2 bg-white p-2 rounded-lg border border-slate-100">
+                    {doc.notes}
+                  </p>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Add New Document Form */}
+        <div className="pt-4 border-t border-slate-100 space-y-2.5">
+          <div className="text-xs font-bold text-slate-800">Add New Document</div>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="text"
+              placeholder="Document Title (e.g., Swiss Hotel Voucher)"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="px-2.5 py-1.5 text-xs border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Booking / Confirmation Code"
+              value={confirmationCode}
+              onChange={(e) => setConfirmationCode(e.target.value)}
+              className="px-2.5 py-1.5 text-xs border rounded-lg font-mono"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as any)}
+              className="px-2.5 py-1.5 text-xs border rounded-lg"
+            >
+              <option value="Hotel Voucher">Hotel Voucher</option>
+              <option value="Ticket">Transit / Flight Ticket</option>
+              <option value="Visa/Passport">Visa / Passport Note</option>
+              <option value="Insurance">Travel Insurance</option>
+              <option value="Note">General Note</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Important Notes / Gates / Instructions"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="px-2.5 py-1.5 text-xs border rounded-lg"
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              onClick={handleSave}
+              className="px-4 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg"
+            >
+              Add Document
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
