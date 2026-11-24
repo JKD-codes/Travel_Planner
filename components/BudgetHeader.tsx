@@ -50,33 +50,35 @@ export default function BudgetHeader({
   const isNear = summary.status === 'NEAR_LIMIT';
 
   const progressColor = isOver
-    ? 'bg-rose-500'
+    ? 'bg-gradient-to-r from-rose-500 to-red-600'
     : isNear
-    ? 'bg-amber-500'
-    : 'bg-emerald-500';
+    ? 'bg-gradient-to-r from-amber-400 to-amber-500'
+    : 'bg-gradient-to-r from-emerald-400 to-teal-500';
 
   const statusBadge = isOver ? (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/20 backdrop-blur-md">
       <AlertTriangle className="w-3.5 h-3.5" /> Over Budget
     </span>
   ) : isNear ? (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20 backdrop-blur-md">
       <AlertTriangle className="w-3.5 h-3.5" /> Nearing Limit ({summary.budgetUsagePercent}%)
     </span>
   ) : (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 backdrop-blur-md">
       <CheckCircle className="w-3.5 h-3.5" /> On Track
     </span>
   );
 
   return (
-    <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs transition-colors">
+    <header className="sticky top-0 z-30 bg-white/75 dark:bg-slate-900/75 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/80 shadow-xs transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         {/* Top bar: Trip Title & Quick Actions */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">{trip.title}</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent tracking-tight">
+                {trip.title}
+              </span>
               {statusBadge}
             </div>
             <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -95,7 +97,7 @@ export default function BudgetHeader({
             {/* Theme Toggle Button */}
             <button
               onClick={onToggleDarkMode}
-              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-2xs"
+              className="p-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs"
               title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
@@ -103,24 +105,24 @@ export default function BudgetHeader({
 
             <button
               onClick={onOpenDocuments}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs"
             >
               <FileText className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
               Documents ({trip.documents?.length || 0})
             </button>
             <button
               onClick={onOpenChat}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-xs font-medium text-white transition shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-xs font-medium text-white transition shadow-sm hover:shadow-md"
             >
-              <Sparkles className="w-3.5 h-3.5 text-sky-200" />
+              <Sparkles className="w-3.5 h-3.5 text-sky-100" />
               AI Trip Copilot
             </button>
           </div>
         </div>
 
-        {/* The Vibe Check: Budget Progress Bar & Key Numbers */}
-        <div className="bg-slate-50 dark:bg-slate-800/80 rounded-xl p-3 border border-slate-200 dark:border-slate-700/80 transition-colors">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2 mb-1.5">
+        {/* The Vibe Check: Glassmorphic Budget Progress Bar */}
+        <div className="bg-slate-50/80 dark:bg-slate-800/60 backdrop-blur-lg rounded-2xl p-3.5 border border-slate-200/60 dark:border-slate-700/60 shadow-xs transition-all">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2 mb-2">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1">
                 <Wallet className="w-4 h-4 text-sky-600 dark:text-sky-400" />
@@ -132,11 +134,11 @@ export default function BudgetHeader({
                     type="number"
                     value={budgetValue}
                     onChange={(e) => setBudgetValue(e.target.value)}
-                    className="w-24 px-2 py-0.5 text-xs border rounded bg-white dark:bg-slate-900 dark:text-white dark:border-slate-600"
+                    className="w-24 px-2 py-0.5 text-xs border rounded-lg bg-white dark:bg-slate-900 dark:text-white dark:border-slate-600"
                   />
                   <button
                     onClick={handleSaveBudget}
-                    className="px-2 py-0.5 bg-sky-600 text-white rounded text-xs"
+                    className="px-2 py-0.5 bg-sky-600 text-white rounded-md text-xs font-medium"
                   >
                     Save
                   </button>
@@ -153,7 +155,7 @@ export default function BudgetHeader({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-slate-600 dark:text-slate-300 font-medium">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-slate-600 dark:text-slate-300 font-medium">
               <span>
                 Estimated: <strong className="text-slate-800 dark:text-slate-100">${summary.totalEstimatedCost.toLocaleString()}</strong>
               </span>
@@ -170,13 +172,13 @@ export default function BudgetHeader({
           </div>
 
           {/* Progress bar */}
-          <div className="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden flex">
+          <div className="w-full bg-slate-200/80 dark:bg-slate-700/80 h-3 rounded-full overflow-hidden flex p-0.5 shadow-inner">
             <div
-              className={`h-full transition-all duration-500 ${progressColor}`}
+              className={`h-full rounded-full transition-all duration-500 shadow-sm ${progressColor}`}
               style={{ width: `${Math.min(100, summary.budgetUsagePercent)}%` }}
             />
           </div>
-          <div className="flex justify-between items-center text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+          <div className="flex justify-between items-center text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
             <span>Server-calculated: {summary.budgetUsagePercent}% consumed</span>
             <span>
               {summary.remainingBudget < 0
